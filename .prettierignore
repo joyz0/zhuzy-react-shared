@@ -1,0 +1,12 @@
+node_modules/
+.vscode/
+
+CHANGELOG.md
+dist/
+lib/
+es/
+build/
+temp/
+LICENSE.md
+pnpm-lock.yaml
+pnpm-workspace.yaml

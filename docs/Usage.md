@@ -1,0 +1,950 @@
+# Usage
+
+## createBreakpoint
+
+```jsx
+import { createBreakpoint } from '@zhuzy/react-shared'
+
+const useBreakpoint = createBreakpoint({ XL: 1280, L: 768, S: 350 })
+
+const Demo = () => {
+  const breakpoint = useBreakpoint()
+
+  if (breakpoint === 'XL') return <div> XL </div>
+  else if (breakpoint == 'L') return <div> LoL</div>
+  else if (breakpoint == 'S') return <div> Sexyy</div>
+  else return <div> Wth</div>
+}
+```
+
+## useGlobalState
+
+A React hook that creates a globally shared state.
+
+```jsx
+const useGlobalValue = createGlobalState < number > 0
+
+const CompA: FC = () => {
+  const [value, setValue] = useGlobalValue()
+
+  return <button onClick={() => setValue(value + 1)}>+</button>
+}
+
+const CompB: FC = () => {
+  const [value, setValue] = useGlobalValue()
+
+  return <button onClick={() => setValue(value - 1)}>-</button>
+}
+
+const Demo: FC = () => {
+  const [value] = useGlobalValue()
+  return (
+    <div>
+      <p>{value}</p>
+      <CompA />
+      <CompB />
+    </div>
+  )
+}
+```
+
+## createStateContext
+
+Factory for react context hooks that will behave just like React's useState except the state will be shared among all components in the provider.
+
+```jsx
+import { createStateContext } from '@zhuzy/react-shared'
+
+const [useSharedText, SharedTextProvider] = createStateContext('')
+
+const ComponentA = () => {
+  const [text, setText] = useSharedText()
+  return (
+    <p>
+      Component A:
+      <br />
+      <input
+        type="text"
+        value={text}
+        onInput={(ev) => setText(ev.target.value)}
+      />
+    </p>
+  )
+}
+
+const ComponentB = () => {
+  const [text, setText] = useSharedText()
+  return (
+    <p>
+      Component B:
+      <br />
+      <input
+        type="text"
+        value={text}
+        onInput={(ev) => setText(ev.target.value)}
+      />
+    </p>
+  )
+}
+
+const Demo = () => {
+  return (
+    <SharedTextProvider>
+      <p>Those two fields share the same value.</p>
+      <ComponentA />
+      <ComponentB />
+    </SharedTextProvider>
+  )
+}
+```
+
+## useAudio
+
+Creates `<audio>` element, tracks its state and exposes playback controls.
+
+```jsx
+import { useAudio } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const [audio, state, controls, ref] = useAudio({
+    src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+    autoPlay: true,
+  })
+
+  return (
+    <div>
+      {audio}
+      <pre>{JSON.stringify(state, null, 2)}</pre>
+      <button onClick={controls.pause}>Pause</button>
+      <button onClick={controls.play}>Play</button>
+      <br />
+      <button onClick={controls.mute}>Mute</button>
+      <button onClick={controls.unmute}>Un-mute</button>
+      <br />
+      <button onClick={() => controls.volume(0.1)}>Volume: 10%</button>
+      <button onClick={() => controls.volume(0.5)}>Volume: 50%</button>
+      <button onClick={() => controls.volume(1)}>Volume: 100%</button>
+      <br />
+      <button onClick={() => controls.seek(state.time - 5)}>-5 sec</button>
+      <button onClick={() => controls.seek(state.time + 5)}>+5 sec</button>
+    </div>
+  )
+}
+```
+
+## useCookie
+
+React hook that returns the current value of a cookie, a callback to update the cookie and a callback to delete the cookie.
+
+```jsx
+import { useCookie } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const [value, updateCookie, deleteCookie] = useCookie('my-cookie')
+  const [counter, setCounter] = useState(1)
+
+  useEffect(() => {
+    deleteCookie()
+  }, [])
+
+  const updateCookieHandler = () => {
+    updateCookie(`my-awesome-cookie-${counter}`)
+    setCounter((c) => c + 1)
+  }
+
+  return (
+    <div>
+      <p>Value: {value}</p>
+      <button onClick={updateCookieHandler}>Update Cookie</button>
+      <br />
+      <button onClick={deleteCookie}>Delete Cookie</button>
+    </div>
+  )
+}
+```
+
+## useCopyToClipboard
+
+Copy text to a user's clipboard.
+
+```jsx
+const Demo = () => {
+  const [text, setText] = React.useState('')
+  const [state, copyToClipboard] = useCopyToClipboard()
+
+  return (
+    <div>
+      <input value={text} onChange={(e) => setText(e.target.value)} />
+      <button type="button" onClick={() => copyToClipboard(text)}>
+        copy text
+      </button>
+      {state.error ? (
+        <p>Unable to copy value: {state.error.message}</p>
+      ) : (
+        state.value && <p>Copied {state.value}</p>
+      )}
+    </div>
+  )
+}
+```
+
+## useEffectOnce
+
+React lifecycle hook that runs an effect only once.
+
+```jsx
+import { useEffectOnce } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  useEffectOnce(() => {
+    console.log('Running effect once on mount')
+
+    return () => {
+      console.log('Running clean-up of effect on unmount')
+    }
+  })
+
+  return null
+}
+```
+
+## useError
+
+React side-effect hook that returns an error dispatcher.
+
+```jsx
+import { useError } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const dispatchError = useError()
+
+  const clickHandler = () => {
+    dispatchError(new Error('Some error!'))
+  }
+
+  return <button onClick={clickHandler}>Click me to throw</button>
+}
+
+// In parent app
+const App = () => (
+  <ErrorBoundary>
+    <Demo />
+  </ErrorBoundary>
+)
+```
+
+## useEvent
+
+React sensor hook that subscribes a handler to events.
+
+```jsx
+import { useEvent, useList } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const [list, { push, clear }] = useList()
+
+  const onKeyDown = useCallback(({ key }) => {
+    if (key === 'r') clear()
+    push(key)
+  }, [])
+
+  useEvent('keydown', onKeyDown)
+
+  return (
+    <div>
+      <p>
+        Press some keys on your keyboard,{' '}
+        <code style={{ color: 'tomato' }}>r</code> key resets the list
+      </p>
+      <pre>{JSON.stringify(list, null, 4)}</pre>
+    </div>
+  )
+}
+```
+
+## useFirstMountState
+
+Returns `true` if component is just mounted (on first render) and `false` otherwise.
+
+```jsx
+import { useFirstMountState } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const isFirstMount = useFirstMountState()
+  const update = useUpdate()
+
+  return (
+    <div>
+      <span>This component is just mounted: {isFirstMount ? 'YES' : 'NO'}</span>
+      <br />
+      <button onClick={update}>re-render</button>
+    </div>
+  )
+}
+```
+
+## useFullscreen
+
+Display an element full-screen, optional fallback for fullscreen video on iOS.
+
+```jsx
+import { useFullscreen, useToggle } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const ref = useRef(null)
+  const [show, toggle] = useToggle(false)
+  const isFullscreen = useFullscreen(ref, show, {
+    onClose: () => toggle(false),
+  })
+
+  return (
+    <div ref={ref} style={{ backgroundColor: 'white' }}>
+      <div>{isFullscreen ? 'Fullscreen' : 'Not fullscreen'}</div>
+      <button onClick={() => toggle()}>Toggle</button>
+      <video src="http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4" autoPlay />
+    </div>
+  )
+}
+```
+
+## useGeolocation
+
+React sensor hook that tracks user's geographic location. This hook accepts position options.
+
+```jsx
+import { useGeolocation } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const state = useGeolocation()
+
+  return <pre>{JSON.stringify(state, null, 2)}</pre>
+}
+```
+
+## useIdle
+
+React sensor hook that tracks if user on the page is idle.
+
+```jsx
+import { useIdle } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const isIdle = useIdle(3e3)
+
+  return (
+    <div>
+      <div>User is idle: {isIdle ? 'Yes 😴' : 'Nope'}</div>
+    </div>
+  )
+}
+```
+
+## useIntersection
+
+React sensor hook that tracks the changes in the intersection of a target element with an ancestor element or with a top-level document's viewport. Uses the Intersection Observer API and returns a IntersectionObserverEntry.
+
+```jsx
+import * as React from 'react'
+import { useIntersection } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const intersectionRef = React.useRef(null)
+  const intersection = useIntersection(intersectionRef, {
+    root: null,
+    rootMargin: '0px',
+    threshold: 1,
+  })
+
+  return (
+    <div ref={intersectionRef}>
+      {intersection && intersection.intersectionRatio < 1
+        ? 'Obscured'
+        : 'Fully in view'}
+    </div>
+  )
+}
+```
+
+## useInterval
+
+A declarative interval hook based on Dan Abramov's article on overreacted.io. The interval can be paused by setting the delay to null.
+
+```jsx
+import * as React from 'react'
+import { useInterval } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const [count, setCount] = React.useState(0)
+  const [delay, setDelay] = React.useState(1000)
+  const [isRunning, toggleIsRunning] = useBoolean(true)
+
+  useInterval(
+    () => {
+      setCount(count + 1)
+    },
+    isRunning ? delay : null,
+  )
+
+  return (
+    <div>
+      <div>
+        delay:{' '}
+        <input
+          value={delay}
+          onChange={(event) => setDelay(Number(event.target.value))}
+        />
+      </div>
+      <h1>count: {count}</h1>
+      <div>
+        <button onClick={toggleIsRunning}>
+          {isRunning ? 'stop' : 'start'}
+        </button>
+      </div>
+    </div>
+  )
+}
+```
+
+## useIsomorphicLayoutEffect
+
+useLayoutEffect that does not show warning when server-side rendering.
+
+```jsx
+import { useIsomorphicLayoutEffect } from '@zhuzy/react-shared'
+
+const Demo = ({ value }) => {
+  useIsomorphicLayoutEffect(() => {
+    window.console.log(value)
+  }, [value])
+
+  return null
+}
+```
+
+## useKey
+
+React UI sensor hook that executes a handler when a keyboard key is used.
+
+```jsx
+import { useKey } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const [count, set] = useState(0)
+  const increment = () => set((count) => ++count)
+  useKey('ArrowUp', increment)
+
+  return <div>Press arrow up: {count}</div>
+}
+```
+
+## useKeyPress
+
+React UI sensor hook that detects when the user is pressing a specific key on their keyboard.
+
+```jsx
+import { useKeyPress } from '@zhuzy/react-shared'
+
+const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+
+const Demo = () => {
+  const states = []
+  for (const key of keys) states.push(useKeyPress(key)[0])
+
+  return (
+    <div style={{ textAlign: 'center' }}>
+      Try pressing numbers
+      <br />
+      {states.reduce((s, pressed, index) => {
+        return s + (pressed ? (s ? ' + ' : '') + keys[index] : '')
+      }, '')}
+    </div>
+  )
+}
+```
+
+## useKeyPressEvent
+
+This hook fires keydown and keyup callbacks, similar to how useKey hook does, but it only triggers each callback once per press cycle. For example, if you press and hold a key, it will fire keydown callback only once.
+
+```jsx
+import React, { useState } from React;
+import {useKeyPressEvent} from '@zhuzy/react-shared';
+
+const Demo = () => {
+  const [count, setCount] = useState(0);
+
+  const increment = () => setCount(count => ++count);
+  const decrement = () => setCount(count => --count);
+  const reset = () => setCount(count => 0);
+
+  useKeyPressEvent(']', increment, increment);
+  useKeyPressEvent('[', decrement, decrement);
+  useKeyPressEvent('r', reset);
+
+  return (
+    <div>
+      <p>
+        Try pressing <code>[</code>, <code>]</code>, and <code>r</code> to
+        see the count incremented and decremented.</p>
+      <p>Count: {count}</p>
+    </div>
+  );
+};
+```
+
+## useList
+
+Tracks an array and provides methods to modify it.
+
+```jsx
+import { useList } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const [
+    list,
+    {
+      set,
+      push,
+      updateAt,
+      insertAt,
+      update,
+      updateFirst,
+      upsert,
+      sort,
+      filter,
+      removeAt,
+      clear,
+      reset,
+    },
+  ] = useList([1, 2, 3, 4, 5])
+
+  return (
+    <div>
+      <button onClick={() => set([1, 2, 3])}>Set to [1, 2, 3]</button>
+      <button onClick={() => push(Date.now())}>Push timestamp</button>
+      <button onClick={() => updateAt(1, Date.now())}>
+        Update value at index 1
+      </button>
+      <button onClick={() => remove(1)}>Remove element at index 1</button>
+      <button onClick={() => filter((item) => item % 2 === 0)}>
+        Filter even values
+      </button>
+      <button onClick={() => sort((a, b) => a - b)}>Sort ascending</button>
+      <button onClick={() => sort((a, b) => b - a)}>Sort descending</button>
+      <button onClick={clear}>Clear</button>
+      <button onClick={reset}>Reset</button>
+      <pre>{JSON.stringify(list, null, 2)}</pre>
+    </div>
+  )
+}
+```
+
+## useLocalStorage
+
+React side-effect hook that manages a single localStorage key.
+
+```jsx
+import { useLocalStorage } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const [value, setValue, remove] = useLocalStorage('my-key', 'foo')
+
+  return (
+    <div>
+      <div>Value: {value}</div>
+      <button onClick={() => setValue('bar')}>bar</button>
+      <button onClick={() => setValue('baz')}>baz</button>
+      <button onClick={() => remove()}>Remove</button>
+    </div>
+  )
+}
+```
+
+## useLongPress
+
+React sensor hook that fires a callback after long pressing.
+
+```jsx
+import { useLongPress } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const onLongPress = () => {
+    console.log('calls callback after long pressing 300ms')
+  }
+
+  const defaultOptions = {
+    isPreventDefault: true,
+    delay: 300,
+  }
+  const longPressEvent = useLongPress(onLongPress, defaultOptions)
+
+  return <button {...longPressEvent}>useLongPress</button>
+}
+```
+
+## useMap
+
+React state hook that tracks a value of an object.
+
+```jsx
+import { useMap } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const [map, { set, setAll, remove, reset }] = useMap({
+    hello: 'there',
+  })
+
+  return (
+    <div>
+      <button onClick={() => set(String(Date.now()), new Date().toJSON())}>
+        Add
+      </button>
+      <button onClick={() => reset()}>Reset</button>
+      <button onClick={() => setAll({ hello: 'new', data: 'data' })}>
+        Set new data
+      </button>
+      <button onClick={() => remove('hello')} disabled={!map.hello}>
+        Remove 'hello'
+      </button>
+      <pre>{JSON.stringify(map, null, 2)}</pre>
+    </div>
+  )
+}
+```
+
+## useMountedState
+
+Lifecycle hook providing ability to check component's mount state.  
+Returns a function that will return `true` if component mounted and `false` otherwise.
+
+```jsx
+import { useMountedState } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const isMounted = useMountedState()
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      if (isMounted()) {
+        // ...
+      } else {
+        // ...
+      }
+    }, 1000)
+  })
+}
+```
+
+## useMouse
+
+React sensor hooks that re-render on mouse position changes.
+
+```jsx
+import { useMouse } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const ref = React.useRef(null)
+  const { docX, docY, posX, posY, elX, elY, elW, elH } = useMouse(ref)
+
+  return (
+    <div ref={ref}>
+      <div>
+        Mouse position in document - x:{docX} y:{docY}
+      </div>
+      <div>
+        Mouse position in element - x:{elX} y:{elY}
+      </div>
+      <div>
+        Element position- x:{posX} y:{posY}
+      </div>
+      <div>
+        Element dimensions - {elW}x{elH}
+      </div>
+    </div>
+  )
+}
+```
+
+## useQueue
+
+React state hook implements simple FIFO queue.
+
+```jsx
+import { useQueue } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const { add, remove, first, last, size } = useQueue()
+
+  return (
+    <div>
+      <ul>
+        <li>first: {first}</li>
+        <li>last: {last}</li>
+        <li>size: {size}</li>
+      </ul>
+      <button onClick={() => add((last || 0) + 1)}>Add</button>
+      <button onClick={() => remove()}>Remove</button>
+    </div>
+  )
+}
+```
+
+## useRafState
+
+React state hook that only updates state in the callback of requestAnimationFrame.
+
+```jsx
+import { useRafState, useMount } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const [state, setState] = useRafState({
+    width: 0,
+    height: 0,
+  })
+
+  useMount(() => {
+    const onResize = () => {
+      setState({
+        width: window.clientWidth,
+        height: window.height,
+      })
+    }
+
+    window.addEventListener('resize', onResize)
+
+    return () => {
+      window.removeEventListener('resize', onResize)
+    }
+  })
+
+  return <pre>{JSON.stringify(state, null, 2)}</pre>
+}
+```
+
+## useSearchParam
+
+React sensor hook that tracks browser's location search param.
+
+```jsx
+import { useSearchParam } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const edit = useSearchParam('edit')
+
+  return (
+    <div>
+      <div>edit: {edit || '🤷‍♂️'}</div>
+      <div>
+        <button
+          onClick={() =>
+            history.pushState({}, '', location.pathname + '?edit=123')
+          }
+        >
+          Edit post 123 (?edit=123)
+        </button>
+      </div>
+      <div>
+        <button
+          onClick={() =>
+            history.pushState({}, '', location.pathname + '?edit=999')
+          }
+        >
+          Edit post 999 (?edit=999)
+        </button>
+      </div>
+      <div>
+        <button onClick={() => history.pushState({}, '', location.pathname)}>
+          Close modal
+        </button>
+      </div>
+    </div>
+  )
+}
+```
+
+## useSessionStorage
+
+React side-effect hook that manages a single sessionStorage key.
+
+```jsx
+import { useSessionStorage } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const [value, setValue] = useSessionStorage('my-key', 'foo')
+
+  return (
+    <div>
+      <div>Value: {value}</div>
+      <button onClick={() => setValue('bar')}>bar</button>
+      <button onClick={() => setValue('baz')}>baz</button>
+    </div>
+  )
+}
+```
+
+## useSetState
+
+React state hook that creates setState method which works similar to how this.setState works in class components—it merges object changes into current state.
+
+```jsx
+import { useSetState } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const [state, setState] = useSetState({})
+
+  return (
+    <div>
+      <pre>{JSON.stringify(state, null, 2)}</pre>
+      <button onClick={() => setState({ hello: 'world' })}>hello</button>
+      <button onClick={() => setState({ foo: 'bar' })}>foo</button>
+      <button
+        onClick={() => {
+          setState((prevState) => ({
+            count: (prevState.count || 0) + 1,
+          }))
+        }}
+      >
+        count
+      </button>
+    </div>
+  )
+}
+```
+
+## useToggle
+
+React state hook that tracks value of a boolean.
+
+```jsx
+import { useToggle } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const [on, toggle] = useToggle(true)
+
+  return (
+    <div>
+      <div>{on ? 'ON' : 'OFF'}</div>
+      <button onClick={toggle}>Toggle</button>
+      <button onClick={() => toggle(true)}>set ON</button>
+      <button onClick={() => toggle(false)}>set OFF</button>
+    </div>
+  )
+}
+```
+
+## useUnmount
+
+React lifecycle hook that calls a function when the component will unmount. Use `useLifecycles` if you need both a mount and unmount function.
+
+```jsx
+import { useUnmount } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  useUnmount(() => alert('UNMOUNTED'))
+  return null
+}
+```
+
+## useUpdate
+
+React utility hook that returns a function that forces component
+to re-render when called.
+
+```jsx
+import { useUpdate } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const update = useUpdate()
+  return (
+    <>
+      <div>Time: {Date.now()}</div>
+      <button onClick={update}>Update</button>
+    </>
+  )
+}
+```
+
+## useUpdateEffect
+
+React effect hook that ignores the first invocation (e.g. on mount). The signature is exactly the same as the useEffect hook.
+
+```jsx
+import { useUpdateEffect } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const [count, setCount] = React.useState(0)
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setCount((count) => count + 1)
+    }, 1000)
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, [])
+
+  useUpdateEffect(() => {
+    console.log('count', count) // will only show 1 and beyond
+
+    return () => {
+      // *OPTIONAL*
+      // do something on unmount
+    }
+  }) // you can include deps array if necessary
+
+  return <div>Count: {count}</div>
+}
+```
+
+## useVideo
+
+Creates `<video>` element, tracks its state and exposes playback controls.
+
+```jsx
+import { useVideo } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const [video, state, controls, ref] = useVideo(
+    <video src="http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4" autoPlay />,
+  )
+
+  return (
+    <div>
+      {video}
+      <pre>{JSON.stringify(state, null, 2)}</pre>
+      <button onClick={controls.pause}>Pause</button>
+      <button onClick={controls.play}>Play</button>
+      <br />
+      <button onClick={controls.mute}>Mute</button>
+      <button onClick={controls.unmute}>Un-mute</button>
+      <br />
+      <button onClick={() => controls.volume(0.1)}>Volume: 10%</button>
+      <button onClick={() => controls.volume(0.5)}>Volume: 50%</button>
+      <button onClick={() => controls.volume(1)}>Volume: 100%</button>
+      <br />
+      <button onClick={() => controls.seek(state.time - 5)}>-5 sec</button>
+      <button onClick={() => controls.seek(state.time + 5)}>+5 sec</button>
+    </div>
+  )
+}
+```
+
+## useWindowSize
+
+React sensor hook that tracks dimensions of the browser window.
+
+```jsx
+import { useWindowSize } from '@zhuzy/react-shared'
+
+const Demo = () => {
+  const { width, height } = useWindowSize()
+
+  return (
+    <div>
+      <div>width: {width}</div>
+      <div>height: {height}</div>
+    </div>
+  )
+}
+```

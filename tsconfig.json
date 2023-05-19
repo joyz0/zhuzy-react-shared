@@ -1,0 +1,25 @@
+{
+  "include": ["rollup.config.ts", "rollupLicensePlugin.ts", "src", "__tests__"],
+  "exclude": ["node_modules", "build", "dist"],
+  "compilerOptions": {
+    "outDir": "dist",
+    "target": "ESNext",
+    "module": "ESNext",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "moduleResolution": "node",
+    "jsx": "react-jsx",
+    "pretty": true,
+    "strict": true,
+    "declaration": true,
+    "declarationDir": "dist/types",
+    "isolatedModules": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noImplicitAny": false,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "importHelpers": true
+  }
+}
