@@ -2,9 +2,13 @@ import { renderHook } from '@testing-library/react-hooks'
 import useInterval from '../src/hooks/useInterval'
 
 let callback
+let spyClearInterval
+let spySetInterval
 
 beforeEach(() => {
   callback = jest.fn()
+  spyClearInterval = jest.spyOn(global, 'clearInterval')
+  spySetInterval = jest.spyOn(global, 'setInterval')
 })
 
 beforeAll(() => {
@@ -24,17 +28,17 @@ it('should init hook with default delay', () => {
   const { result } = renderHook(() => useInterval(callback))
 
   expect(result.current).toBeUndefined()
-  expect(setInterval).toHaveBeenCalledTimes(1)
+  expect(spySetInterval).toHaveBeenCalledTimes(1)
   // if not delay provided, it's assumed as 0
-  expect(setInterval).toHaveBeenCalledWith(expect.any(Function), 0)
+  expect(spySetInterval).toHaveBeenCalledWith(expect.any(Function), 0)
 })
 
 it('should init hook with custom delay', () => {
   const { result } = renderHook(() => useInterval(callback, 5000))
 
   expect(result.current).toBeUndefined()
-  expect(setInterval).toHaveBeenCalledTimes(1)
-  expect(setInterval).toHaveBeenCalledWith(expect.any(Function), 5000)
+  expect(spySetInterval).toHaveBeenCalledTimes(1)
+  expect(spySetInterval).toHaveBeenCalledWith(expect.any(Function), 5000)
 })
 
 it('should init hook without delay', () => {
@@ -42,7 +46,7 @@ it('should init hook without delay', () => {
 
   expect(result.current).toBeUndefined()
   // if null delay provided, it's assumed as no delay
-  expect(setInterval).not.toHaveBeenCalled()
+  expect(spySetInterval).not.toHaveBeenCalled()
 })
 
 it('should repeatedly calls provided callback with a fixed time delay between each call', () => {
@@ -69,11 +73,11 @@ it('should repeatedly calls provided callback with a fixed time delay between ea
 it('should clear interval on unmount', () => {
   const { unmount } = renderHook(() => useInterval(callback, 200))
   const initialTimerCount = jest.getTimerCount()
-  expect(clearInterval).not.toHaveBeenCalled()
+  expect(spyClearInterval).not.toHaveBeenCalled()
 
   unmount()
 
-  expect(clearInterval).toHaveBeenCalledTimes(1)
+  expect(spyClearInterval).toHaveBeenCalledTimes(1)
   expect(jest.getTimerCount()).toBe(initialTimerCount - 1)
 })
 
@@ -102,13 +106,13 @@ it('should handle new interval when delay is updated', () => {
 it('should clear pending interval when delay is updated', () => {
   let delay = 200
   const { rerender } = renderHook(() => useInterval(callback, delay))
-  expect(clearInterval).not.toHaveBeenCalled()
+  expect(spyClearInterval).not.toHaveBeenCalled()
   const initialTimerCount = jest.getTimerCount()
 
   // update delay while there is a pending interval
   delay = 500
   rerender()
 
-  expect(clearInterval).toHaveBeenCalledTimes(1)
+  expect(spyClearInterval).toHaveBeenCalledTimes(1)
   expect(jest.getTimerCount()).toBe(initialTimerCount)
 })

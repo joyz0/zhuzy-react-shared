@@ -2,6 +2,7 @@ import type { Config } from 'jest'
 
 const config: Config = {
   testEnvironment: 'jsdom',
+  clearMocks: true,
   // setupFilesAfterEnv: ['<rootDir>/jest-setup.ts'],
   // transform: {
   //   '\\.[jt]sx?$': [

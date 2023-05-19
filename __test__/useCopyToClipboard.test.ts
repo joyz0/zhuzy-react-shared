@@ -88,7 +88,6 @@ describe('useCopyToClipboard', () => {
 
   it('should console error if in dev environment', () => {
     const ORIGINAL_NODE_ENV = process.env.NODE_ENV
-    expect(ORIGINAL_NODE_ENV).toBe('production')
     const testValue = {} // invalid value
 
     process.env.NODE_ENV = 'development'

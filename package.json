@@ -38,7 +38,7 @@
     "version:git": "git add . && git commit -m \"chore(release): publish ${npm_package_version}\"",
     "version:changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "version:firstchangelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
-    "publish": "pnpm publish",
+    "publish": "pnpm build && pnpm publish",
     "publish:beta": "pnpm publish --tag beta"
   },
   "lint-staged": {
@@ -68,8 +68,8 @@
     "@rollup/plugin-terser": "^0.4.1",
     "@rollup/plugin-typescript": "^11.1.1",
     "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "12.1.2",
-    "@testing-library/react-hooks": "7.0.2",
+    "@testing-library/react": "14.0.0",
+    "@testing-library/react-hooks": "8.0.1",
     "@types/jest": "^29.5.1",
     "@types/js-cookie": "^3.0.3",
     "@types/node": "^20.1.5",
