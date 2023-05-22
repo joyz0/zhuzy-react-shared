@@ -1,6 +1,6 @@
 {
   "include": ["rollup.config.ts", "rollupLicensePlugin.ts", "src", "__tests__"],
-  "exclude": ["node_modules", "build", "dist"],
+  "exclude": ["node_modules", "build", "dist", "stories"],
   "compilerOptions": {
     "outDir": "dist",
     "target": "ESNext",

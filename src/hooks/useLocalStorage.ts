@@ -18,7 +18,7 @@ type parserOptions<T> =
       deserializer: (value: string) => T
     }
 
-const useLocalStorage = <T>(
+const useLocalStorage = <T = any>(
   key: string,
   initialValue?: T,
   options?: parserOptions<T>,

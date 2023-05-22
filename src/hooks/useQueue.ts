@@ -8,7 +8,7 @@ export interface QueueMethods<T> {
   size: number
 }
 
-const useQueue = <T>(initialValue: T[] = []): QueueMethods<T> => {
+const useQueue = <T = any>(initialValue: T[] = []): QueueMethods<T> => {
   const [state, set] = useState(initialValue)
   return {
     add: (value) => {

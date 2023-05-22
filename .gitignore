@@ -12,6 +12,7 @@ lib
 es
 build
 build.zip
+storybook-static
 
 # misc
 .DS_Store

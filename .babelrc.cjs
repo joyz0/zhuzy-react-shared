@@ -8,4 +8,12 @@ module.exports = {
     // don't use `loose` mode here - need to copy symbols when spreading
     '@babel/proposal-object-rest-spread',
   ],
+  env: {
+    test: {
+      plugins: ['dynamic-import-node'],
+    },
+    production: {
+      plugins: ['@babel/plugin-syntax-dynamic-import'],
+    },
+  },
 }
