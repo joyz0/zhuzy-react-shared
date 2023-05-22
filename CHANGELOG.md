@@ -1,3 +1,11 @@
+## 0.2.1 (2023-05-22)
+
+
+### Features
+
+* add gh-pages scripts ([f553c88](https://github.com/justable/zhuzy-react-shared/commit/f553c88bc6c48c643f60ada3e486995ff41cf3be))
+
+
 # 0.2.0 (2023-05-22)
 
 
