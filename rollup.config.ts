@@ -6,6 +6,7 @@ import terser from '@rollup/plugin-terser'
 import postcss from 'rollup-plugin-postcss'
 import autoprefixer from 'autoprefixer'
 import postcssNesting from 'postcss-nesting'
+import postcssPresetEnv from 'postcss-preset-env'
 import type { Plugin, RollupOptions } from 'rollup'
 import { defineConfig } from 'rollup'
 import pkg from './package.json' assert { type: 'json' }
@@ -49,7 +50,7 @@ function createNodePlugins(
     postcss({
       extract: true,
       // https://github.com/csstools/postcss-plugins/tree/main/plugins
-      plugins: [autoprefixer, postcssNesting],
+      plugins: [postcssPresetEnv()],
     }),
     runtime
       ? babel({

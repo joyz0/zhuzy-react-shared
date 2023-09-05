@@ -41,3 +41,5 @@ export { default as usePinchZoom } from './hooks/usePinchZoom'
 export { default as useScrollbarWidth } from './hooks/useScrollbarWidth'
 export { default as useScrolling } from './hooks/useScrolling'
 export { default as useForceUpdate } from './hooks/useForceUpdate'
+
+export { default as ErrorBoundary } from './components/ErrorBoundary'
