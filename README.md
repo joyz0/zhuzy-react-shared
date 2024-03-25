@@ -1,4 +1,4 @@
-# @zhuzy/react-shared
+# @joyz0/react-shared
 
 [![Build Status](https://travis-ci.org/justable/template-lib-js.svg?branch=master)](https://travis-ci.org/justable/template-lib-js)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)

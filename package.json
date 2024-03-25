@@ -1,6 +1,8 @@
 {
-  "name": "@zhuzy/react-shared",
-  "version": "0.2.4",
+  "name": "@joyz0/react-shared",
+  "version": "0.2.5",
+  "repository": "https://github.com/joyz0/react-shared",
+  "homepage": "https://github.com/joyz0/react-shared",
   "type": "module",
   "license": "MIT",
   "main": "./dist/index.cjs",
@@ -14,7 +16,9 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
     },
-    "./style": "./dist/index.css"
+    "./css/*": {
+      "style": "./dist/*"
+    }
   },
   "files": [
     "dist"
@@ -26,7 +30,6 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "homepage": "https://justable.github.io/zhuzy-react-shared",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "prepare": "husky install",
