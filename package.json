@@ -45,7 +45,7 @@
     "version:changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "version:firstchangelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "release": "pnpm build && pnpm publish",
-    "release:beta": "pnpm publish --tag beta",
+    "release:beta": "pnpm publish --tag rc",
     "storybook": "storybook dev -p 6006",
     "storybook:build": "storybook build",
     "storybook:deploy": "gh-pages -d storybook-static",
